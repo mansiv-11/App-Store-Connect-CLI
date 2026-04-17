@@ -22,5 +22,6 @@ RUN useradd -m -u 1000 helix \
 ENV ASC_BYPASS_KEYCHAIN=1
 ENV GOCACHE=/tmp/gocache
 ENV GOTMPDIR=/tmp/go-tmp
+ENV GOFLAGS="-buildvcs=false"
 
 CMD ["./.helix/run-tests-eval.sh"]
