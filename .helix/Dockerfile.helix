@@ -12,13 +12,10 @@ RUN go mod download
 
 RUN chmod +x .helix/run-tests-eval.sh
 
-# Run tests as a non-root user so permission-sensitive tests (e.g. legacy session cache cleanup)
-# behave like developer/CI environments instead of root-only Linux semantics.
-RUN useradd -m -u 1000 helix \
-	&& mkdir -p /tmp/gocache \
-	&& chown -R helix:helix /app /tmp/gocache
+# Run as root (default) so Helix CI can bind-mount the workspace into /app and run git
+# there without .git permission errors. A non-root USER breaks when the mount is root-owned.
 
-USER helix
+RUN mkdir -p /tmp/gocache
 
 ENV ASC_BYPASS_KEYCHAIN=1
 ENV GOCACHE=/tmp/gocache
