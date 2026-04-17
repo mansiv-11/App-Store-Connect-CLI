@@ -1,0 +1,12 @@
+{
+  "test_validation_mode": "subset",
+  "validation_test_files": [
+    "internal/cli/shared/errfmt/errfmt_test.go",
+    "internal/cli/shared/sanitize_test.go",
+    "internal/cli/shared/optional_bool_test.go",
+    "internal/ascterritory/territory_test.go",
+    "internal/xcode/version_test.go"
+  ],
+  "validation_test_file_count": 5,
+  "validation_tests_executed": null
+}

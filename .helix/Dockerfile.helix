@@ -1,0 +1,27 @@
+FROM golang:1.26-bookworm
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . .
+
+RUN go mod download
+
+RUN chmod +x .helix/run-tests-eval.sh
+
+# Run as root (default) so Helix CI can bind-mount the workspace into /app and run git
+# there without .git permission errors. A non-root USER breaks when the mount is root-owned.
+
+RUN useradd -m -u 1000 helix \
+    && mkdir -p /tmp/gocache /tmp/go-tmp \
+    && chown -R helix:helix /tmp/gocache /tmp/go-tmp
+
+ENV ASC_BYPASS_KEYCHAIN=1
+ENV GOCACHE=/tmp/gocache
+ENV GOTMPDIR=/tmp/go-tmp
+ENV GOFLAGS="-buildvcs=false"
+
+CMD ["./.helix/run-tests-eval.sh"]
