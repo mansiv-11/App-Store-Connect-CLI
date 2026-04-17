@@ -1,0 +1,23 @@
+[
+  {
+    "instance_id": "handshake",
+    "task_title": "handshake",
+    "problem_statement": "Extend `asc app-clips invocations create` so it can create a beta App Clip invocation from either existing localization IDs or a single inline localization provided on the command line. Keep the existing `--localization-id` flow working, add CLI flags for inline `locale` and `title`, and build the `POST /v1/betaAppClipInvocations` request body so inline localizations are sent through the API's `included` resources. The command should fail fast with usage errors when no localization source is provided or when callers try to mix existing localization IDs with inline localization fields.",
+    "problem_statement_variant": "The App Clips invocation create path currently assumes the localization already exists. Update the CLI and ASC client so invocation creation can accept localization details directly, emit the request shape expected by the App Store Connect create schema, and preserve the old ID-based workflow without allowing ambiguous mixed input.",
+    "hints": "Start in `internal/cli/appclips/invocations.go` inside `AppClipInvocationsCreateCommand`, and in `internal/asc/client_app_clips.go` inside `CreateBetaAppClipInvocation`. The offline schema in `docs/openapi/latest.json` for `POST /v1/betaAppClipInvocations` includes both `relationships.betaAppClipInvocationLocalizations` and an `included` array of `BetaAppClipInvocationLocalizationInlineCreate`. Tests also rely on a replaceable App Clips client factory via `internal/cli/appclips/test_hooks.go`. Usage validation should cover missing localization input and the mixed-input error `Error: --localization-id cannot be combined with --locale/--title`.",
+    "repo": "handshake",
+    "repo_path_or_url": "handshake",
+    "FAIL_TO_PASS": "internal/asc/client_http_app_clips_test.go,internal/cli/cmdtest/appclips_invocations_create_test.go,internal/cli/cmdtest/commands_test.go",
+    "PASS_TO_PASS": "",
+    "language": "handshake",
+    "docker_file": "handshake",
+    "run_script": "handshake",
+    "task_type": "handshake",
+    "task_category": "handshake",
+    "repo_category": "handshake",
+    "version": "handshake",
+    "container_mem": "handshake",
+    "container_memswap": "handshake",
+    "container_network_needed": "handshake"
+  }
+]
