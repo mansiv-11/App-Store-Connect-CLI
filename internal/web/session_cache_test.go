@@ -1591,6 +1591,9 @@ func TestTryResumeLastSessionTreatsMalformedLegacyIrisLastMarkerAsMiss(t *testin
 }
 
 func TestTryResumeSessionMigratesLegacyIrisFileCacheKeepsResumedSessionWhenCleanupFails(t *testing.T) {
+	if runningAsRoot() {
+		t.Skip("cleanup-permission simulation is not reliable when tests run as root")
+	}
 	withSessionInfoStub(t)
 	webDir := filepath.Join(t.TempDir(), "web-cache")
 	legacyDir := filepath.Join(t.TempDir(), "iris-cache")
