@@ -8,13 +8,26 @@ cd "$REPO_ROOT"
 
 export ASC_BYPASS_KEYCHAIN=1
 
+run_go_test() {
+	local -a args=("go" "test" "-v" "$@")
+
+	if [[ "$(id -u)" -eq 0 ]] && id helix >/dev/null 2>&1; then
+		local cmd
+		printf -v cmd '%q ' env "ASC_BYPASS_KEYCHAIN=${ASC_BYPASS_KEYCHAIN}" "GOCACHE=${GOCACHE:-/tmp/gocache}" "GOTMPDIR=${GOTMPDIR:-/tmp/go-tmp}" "${args[@]}"
+		su -s /bin/bash helix -c "cd $(printf '%q' "$REPO_ROOT") && $cmd"
+		return
+	fi
+
+	"${args[@]}"
+}
+
 # Root-level tests read `.github/workflows/release.yml`; some sparse checkouts omit it.
 run_all() {
 	local -a skip=()
 	if [[ ! -f .github/workflows/release.yml ]]; then
 		skip=(-skip '^TestReleaseWorkflow')
 	fi
-	go test -v ./... "${skip[@]}"
+	run_go_test ./... "${skip[@]}"
 }
 
 # Comma-separated paths → unique package directories (go test runs per package).
@@ -49,7 +62,7 @@ run_targeted() {
 		return
 	fi
 
-	go test -v "${!pkgs[@]}"
+	run_go_test "${!pkgs[@]}"
 }
 
 if [[ $# -eq 0 ]]; then
