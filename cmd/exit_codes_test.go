@@ -206,8 +206,7 @@ func TestJUnitReportNameWithRootFlags(t *testing.T) {
 	// Build the binary
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
-	cmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	cmd.Dir = ".." // Go up from cmd/ to project root
+	cmd := goBuildCommand(binaryPath)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("Failed to build binary: %v\n%s", err, out)
 	}
@@ -248,8 +247,7 @@ func TestJUnitReportEndToEnd(t *testing.T) {
 	// Build the binary
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
-	cmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	cmd.Dir = ".." // Go up from cmd/ to project root
+	cmd := goBuildCommand(binaryPath)
 	if out, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("Failed to build binary: %v\n%s", err, out)
 	}
@@ -336,8 +334,7 @@ func TestBuildsListMissingAppExitCode(t *testing.T) {
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
 
-	buildCmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	buildCmd.Dir = ".."
+	buildCmd := goBuildCommand(binaryPath)
 	if out, err := buildCmd.CombinedOutput(); err != nil {
 		t.Fatalf("failed to build binary: %v\n%s", err, out)
 	}
@@ -366,8 +363,7 @@ func TestScreenshotsUploadResumeMissingValueExitCode(t *testing.T) {
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
 
-	buildCmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	buildCmd.Dir = ".."
+	buildCmd := goBuildCommand(binaryPath)
 	if out, err := buildCmd.CombinedOutput(); err != nil {
 		t.Fatalf("failed to build binary: %v\n%s", err, out)
 	}
@@ -397,8 +393,7 @@ func TestBuildsTestNotesUpdateConflictingFlagsExitCode(t *testing.T) {
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
 
-	buildCmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	buildCmd.Dir = ".."
+	buildCmd := goBuildCommand(binaryPath)
 	if out, err := buildCmd.CombinedOutput(); err != nil {
 		t.Fatalf("failed to build binary: %v\n%s", err, out)
 	}
@@ -435,8 +430,7 @@ func TestBuildsLatestExcludeExpiredInvalidBooleanExitCode(t *testing.T) {
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
 
-	buildCmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	buildCmd.Dir = ".." // Go up from cmd/ to project root
+	buildCmd := goBuildCommand(binaryPath)
 	if out, err := buildCmd.CombinedOutput(); err != nil {
 		t.Fatalf("failed to build binary: %v\n%s", err, out)
 	}
@@ -469,8 +463,7 @@ func TestPublishAppStoreDryRunInvalidBooleanExitCode(t *testing.T) {
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
 
-	buildCmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	buildCmd.Dir = ".."
+	buildCmd := goBuildCommand(binaryPath)
 	if out, err := buildCmd.CombinedOutput(); err != nil {
 		t.Fatalf("failed to build binary: %v\n%s", err, out)
 	}
@@ -510,8 +503,7 @@ func TestWebAuthLoginLegacyTwoFactorFlagExitCode(t *testing.T) {
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
 
-	buildCmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	buildCmd.Dir = ".."
+	buildCmd := goBuildCommand(binaryPath)
 	if out, err := buildCmd.CombinedOutput(); err != nil {
 		t.Fatalf("failed to build binary: %v\n%s", err, out)
 	}
@@ -551,8 +543,7 @@ func TestAuthTokenConfirmInvalidBooleanExitCode(t *testing.T) {
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
 
-	buildCmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	buildCmd.Dir = ".." // Go up from cmd/ to project root
+	buildCmd := goBuildCommand(binaryPath)
 	if out, err := buildCmd.CombinedOutput(); err != nil {
 		t.Fatalf("failed to build binary: %v\n%s", err, out)
 	}
@@ -585,8 +576,7 @@ func TestWebAuthLoginPromptInterruptDoesNotFallBackToUsageError(t *testing.T) {
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
 
-	buildCmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	buildCmd.Dir = ".."
+	buildCmd := goBuildCommand(binaryPath)
 	if out, err := buildCmd.CombinedOutput(); err != nil {
 		t.Fatalf("failed to build binary: %v\n%s", err, out)
 	}
@@ -665,8 +655,7 @@ func TestWebAuthLoginPromptInterruptSkipsSkillsAutoCheck(t *testing.T) {
 	tmpDir := t.TempDir()
 	binaryPath := filepath.Join(tmpDir, "asc-test")
 
-	buildCmd := exec.Command("go", "build", "-o", binaryPath, ".")
-	buildCmd.Dir = ".."
+	buildCmd := goBuildCommand(binaryPath)
 	if out, err := buildCmd.CombinedOutput(); err != nil {
 		t.Fatalf("failed to build binary: %v\n%s", err, out)
 	}
@@ -801,6 +790,12 @@ func startPTYCapture(ptmx *os.File, prompt string) (*ptyOutput, <-chan struct{},
 	}()
 
 	return output, promptSeen, readDone
+}
+
+func goBuildCommand(binaryPath string) *exec.Cmd {
+	cmd := exec.Command("go", "build", "-buildvcs=false", "-o", binaryPath, ".")
+	cmd.Dir = ".." // Go up from cmd/ to project root
+	return cmd
 }
 
 func isolatedCLITestEnv(configPath string) []string {
