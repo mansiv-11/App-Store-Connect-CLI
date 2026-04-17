@@ -15,7 +15,7 @@ func buildASCBlackBoxBinary(t *testing.T) string {
 	repoRoot := filepath.Clean(filepath.Join("..", "..", ".."))
 	binaryPath := filepath.Join(t.TempDir(), "asc")
 
-	build := exec.Command("go", "build", "-o", binaryPath, ".")
+	build := exec.Command("go", "build", "-buildvcs=false", "-o", binaryPath, ".")
 	build.Dir = repoRoot
 	if output, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("failed to build asc binary: %v\n%s", err, string(output))
